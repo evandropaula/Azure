@@ -5,12 +5,11 @@
     Failover Traffic Manager and CosmosDB/DocumentDB to handle a region failure
     Input determines the DESIRED state for Traffic Manager and CosmosDB/DocumentDB
     There is no rollback or failbabck, which should be handled by running the script with inverted settings
-
 .NOTES
-    File Name  : Failover.ps1
+    File Name  : Failover-Emergency.ps1
     Author     : Evandro de Paula
 .EXAMPLE
-    .\Failover.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -TenantId "e6e208d1-2717-49da-8ad9-982b68b1308f" -TrafficManagerResourceGroupName "rg" -TrafficManagerProfileName "tmp" -TrafficManagerPrimaryEndpointName "endpointname" -DocumentDBResourceGroupName "rg" -DocumentDBAccountName "docdb" -DocumentDBPrimaryLocation "West US" -DocumentDBSecondaryLocation "East US"
+    .\Failover-Emergency.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -TenantId "e6e208d1-2717-49da-8ad9-982b68b1308f" -TrafficManagerResourceGroupName "rg" -TrafficManagerProfileName "tmp" -TrafficManagerPrimaryEndpointName "endpointname" -DocumentDBResourceGroupName "rg" -DocumentDBAccountName "docdb" -DocumentDBPrimaryLocation "West US" -DocumentDBSecondaryLocation "East US"
 #>
 
 
@@ -58,7 +57,7 @@ Import-Module AzureRM.Resources
 
 
 # Helper Functions ------------------------------------------------------>
-. .\Util.ps1
+. ..\..\..\Common\PS\Util.ps1
 
 
 # Global Variable ------------------------------------------------------->

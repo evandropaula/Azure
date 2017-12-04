@@ -26,10 +26,10 @@
             Please retry this request after 44 mins.\r\nActivityId: d8da8f27-333e-46e8-a6fa-13409f3af48c"}
         - To get rid of this threshold, file a support ticket to the Azure CosmosDB team through the Azure Portal. This is recommended specially for test and production environment;
 .NOTES
-    File Name  : Deploy-Canary.ps1
+    File Name  : Failover-CanaryDeployment.ps1
     Author     : Evandro de Paula
 .EXAMPLE
-    .\Deploy-Canary.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -TenantId "e6e208d1-2717-49da-8ad9-982b68b1308f" -ResourceGroupName "rg" -TrafficManagerProfileName "tmp" -DocumentDBResourceGroupName "rg" -DocumentDBAccountName "docdb" -DocumentDBPrimaryLocation "West US" -DocumentDBSecondaryLocation "East US"
+    .\Failover-CanaryDeployment.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -TenantId "e6e208d1-2717-49da-8ad9-982b68b1308f" -ResourceGroupName "rg" -TrafficManagerProfileName "tmp" -DocumentDBResourceGroupName "rg" -DocumentDBAccountName "docdb" -DocumentDBPrimaryLocation "West US" -DocumentDBSecondaryLocation "East US"
 #>
 
 
@@ -73,7 +73,7 @@ Import-Module AzureRM.Resources
 
 
 # Helper Functions ------------------------------------------------------>
-. .\Util.ps1
+. ..\..\..\Common\PS\Util.ps1
 
 
 # Global Variable ------------------------------------------------------->
@@ -122,7 +122,7 @@ function Rollback
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-#Login-AzureRmAccount -ErrorAction Stop
+Login-AzureRmAccount -ErrorAction Stop
 WriteSuccess
 
 
