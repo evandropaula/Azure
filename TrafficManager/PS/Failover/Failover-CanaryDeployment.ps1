@@ -4,6 +4,9 @@
 .DESCRIPTION
     Failover Traffic Manager incrementally to support canary deployments
 
+    * PPT with overall approach details is available at:
+        https://github.com/evandropaula/Azure/blob/master/TrafficManager/PPT/Failover/Canary-Deployment.pptx
+
     * Premises:
         - Service is running in two distinct regions in Azure (e.g. East US and West US);
         - Azure Traffic Manager is used to manage incoming traffic between the two regions;
