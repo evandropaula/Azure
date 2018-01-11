@@ -11,6 +11,11 @@ function WriteTitle($message)
     Write-Host "***** $($message) *****" -ForegroundColor Cyan
 }
 
+function WriteSubtitle($message)
+{
+    Write-Host "--- $($message) ---" -ForegroundColor Magenta
+}
+
 function WriteText($message)
 {
     Write-Host $message -ForegroundColor Yellow
