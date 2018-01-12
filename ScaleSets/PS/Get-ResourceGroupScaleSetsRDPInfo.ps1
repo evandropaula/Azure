@@ -113,7 +113,7 @@ function GetPublicIpName
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-#Login-AzureRmAccount -ErrorAction Stop
+Login-AzureRmAccount -ErrorAction Stop
 WriteSuccess
 
 
@@ -124,7 +124,7 @@ Select-AzureRmSubscription -SubscriptionId $SubscriptionId -ErrorAction Stop
 WriteSuccess
 
 
-# Get Network Interface Data for Scale Set ------------------------------>
+# Find ALL Load Balancers in Resource Group ----------------------------->
 WriteTitle("LOAD BALANCER")
 WriteText("Finding all load balancers on resource group '$($ResourceGroupName)'...")
 
