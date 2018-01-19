@@ -66,24 +66,66 @@ if ($loadBalancer -eq $null)
 
 WriteSuccess
 
-$activeMQManagementPortalRuleName = "ActiveMQPortal"
+$activeMQManagementPortalRuleName = "ActiveMQPortal" # default port 8161
+$activeMQTcpRuleName = "ActiveMQTcp"  # default port 61616
+$activeMQAmqpRuleName = "ActiveMQAmqp" # default port 5672
+
+$addActiveMQManagementPortalRuleName = $true
+$AddActiveMQTcpRuleName = $true
+$addActiveMQAmqpRuleName = $true
 
 # Checks if rule already exists (case insensitive)
 foreach ($loadBalancingRule in $loadBalancer.LoadBalancingRules)
 {
+    WriteText($loadBalancingRule.Name)
+
+    # Management Portal
     if ($loadBalancingRule.Name.Equals($activeMQManagementPortalRuleName, [System.StringComparison]::InvariantCultureIgnoreCase))
     {
-        WriteError("Load balancer rule '$($loadBalancingRule.Name)' already exists. Exiting with no changes...")
-        return -1
+        WriteText("Load balancer rule '$($loadBalancingRule.Name)' already exists. Skip adding this rule...")
+        $addActiveMQManagementPortalRuleName = $false
+    }
+
+    # TCP
+    if ($loadBalancingRule.Name.Equals($activeMQTcpRuleName, [System.StringComparison]::InvariantCultureIgnoreCase))
+    {
+        WriteText("Load balancer rule '$($activeMQTcpRuleName.Name)' already exists. Skip adding this rule...")
+        $AddActiveMQTcpRuleName = $false
+    }
+
+    # AMQP
+    if ($loadBalancingRule.Name.Equals($activeMQAmqpRuleName, [System.StringComparison]::InvariantCultureIgnoreCase))
+    {
+        WriteText("Load balancer rule '$($activeMQAmqpRuleName.Name)' already exists. Skip adding this rule...")
+        $AddActiveMQAmqpRuleName = $false
     }
 }
 
-# Add rule to the load balancer
-WriteText("Adding rule '$($activeMQManagementPortalRuleName)' load balancer '$($loadBalancer.Name)' details...")
-Add-AzureRmLoadBalancerRuleConfig -Name $activeMQManagementPortalRuleName -LoadBalancer $loadBalancer -FrontendIpConfiguration $loadBalancer.FrontendIpConfigurations[0] -BackendAddressPool $loadBalancer.BackendAddressPools[0] -Protocol Tcp -FrontendPort 8161 -BackendPort 8161 -ErrorAction Stop
-WriteSuccess
+# Adds ActiveMQ Management Portal load balancing rule
+if ($addActiveMQManagementPortalRuleName -eq $true)
+{
+    WriteText("Adding rule '$($activeMQManagementPortalRuleName)' load balancer '$($loadBalancer.Name)' details...")
+    Add-AzureRmLoadBalancerRuleConfig -Name $activeMQManagementPortalRuleName -LoadBalancer $loadBalancer -FrontendIpConfiguration $loadBalancer.FrontendIpConfigurations[0] -BackendAddressPool $loadBalancer.BackendAddressPools[0] -Protocol Tcp -FrontendPort 8161 -BackendPort 8161 -ErrorAction Stop
+    WriteSuccess
+}
 
-# Update the load balancer
+# Adds ActiveMQ TCP load balancing rule
+if ($AddActiveMQTcpRuleName -eq $true)
+{
+    WriteText("Adding rule '$($activeMQTcpRuleName)' load balancer '$($loadBalancer.Name)' details...")
+    Add-AzureRmLoadBalancerRuleConfig -Name $activeMQTcpRuleName -LoadBalancer $loadBalancer -FrontendIpConfiguration $loadBalancer.FrontendIpConfigurations[0] -BackendAddressPool $loadBalancer.BackendAddressPools[0] -Protocol Tcp -FrontendPort 61616 -BackendPort 61616 -ErrorAction Stop
+    WriteSuccess
+}
+
+# Adds ActiveMQ AMQP load balancing rule
+if ($AddActiveMQAmqpRuleName -eq $true)
+{
+    WriteText("Adding rule '$($activeMQAmqpRuleName)' load balancer '$($loadBalancer.Name)' details...")
+    Add-AzureRmLoadBalancerRuleConfig -Name $activeMQAmqpRuleName -LoadBalancer $loadBalancer -FrontendIpConfiguration $loadBalancer.FrontendIpConfigurations[0] -BackendAddressPool $loadBalancer.BackendAddressPools[0] -Protocol Tcp -FrontendPort 5672 -BackendPort 5672 -ErrorAction Stop
+    WriteSuccess
+}
+
+# Updates the load balancer
 WriteText("Updating load balancer '$($loadBalancer.Name)' details...")
 Set-AzureRmLoadBalancer -LoadBalancer $loadBalancer
 WriteSuccess
