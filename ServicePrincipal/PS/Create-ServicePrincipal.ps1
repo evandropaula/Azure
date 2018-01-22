@@ -50,7 +50,7 @@ Import-Module AzureRM.Resources
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-#Login-AzureRmAccount -ErrorAction Stop
+Login-AzureRmAccount -ErrorAction Stop
 WriteSuccess
 
 
