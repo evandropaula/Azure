@@ -7,7 +7,7 @@
     File Name  : Create-ServicePrincipal.ps1
     Author     : Evandro de Paula
 .EXAMPLE
-    .\Create-ServicePrincipal.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -Scope "/subscriptions/f4f718ef-c9ed-429c-9bb5-614c999b91d3" -ServicePrincipalName "spn" -Password "p@zzw0rd" -Role "Contributor"
+    .\Create-ServicePrincipal.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -TenantId "398e7a92-6e66-4ae1-8fe1-71564738f2df" -Scope "/subscriptions/f4f718ef-c9ed-429c-9bb5-614c999b91d3" -ServicePrincipalName "spn" -Password "p@zzw0rd" -Role "Contributor"
 #>
 
 
@@ -15,6 +15,10 @@ Param (
     [Parameter(Mandatory=$true)]
     [String]
     $SubscriptionId,
+    
+    [Parameter(Mandatory=$true)]
+    [String]
+    $TenantId,
 
     [Parameter(Mandatory=$true)]
     [String]
@@ -46,7 +50,7 @@ Import-Module AzureRM.Resources
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-Login-AzureRmAccount -ErrorAction Stop
+#Login-AzureRmAccount -ErrorAction Stop
 WriteSuccess
 
 
@@ -62,7 +66,10 @@ WriteTitle("SERVICE PRINCIPAL")
 
 # Create AD application
 WriteText("Provisioning AD Application...")
-$Application = New-AzureRmADApplication -DisplayName $ServicePrincipalName -HomePage ("http://" + $ServicePrincipalName) -IdentifierUris ("http://" + $ServicePrincipalName) -Password $Password -ErrorAction Stop
+
+# A secure string is required for the password on New-AzureRmADApplication, find more details at https://github.com/Azure/azure-powershell/issues/4971
+$securePassword = ConvertTo-SecureString $Password -asplaintext -force
+$Application = New-AzureRmADApplication -DisplayName $ServicePrincipalName -HomePage ("http://" + $ServicePrincipalName) -IdentifierUris ("http://" + $ServicePrincipalName) -Password $securePassword -ErrorAction Stop
 WriteSuccess
 
 # Create Service Principal for the AD Application ----------------------->
@@ -107,6 +114,15 @@ if ($isRoleAssignmentCompleted -eq $false)
     return -1
 }
 
+WriteSuccess
+
+
+# Login to Azure -------------------------------------------------------->
+WriteTitle("AUTHENTICATION")
+WriteText("Logging in to Azure to test the Service Principal account just created...")
+
+$creds = New-Object System.Management.Automation.PSCredential ($Application.ApplicationId, $securePassword)
+Add-AzureRmAccount -ServicePrincipal -Credential $creds -TenantId $TenantId -ErrorAction Stop
 WriteSuccess
 
 
