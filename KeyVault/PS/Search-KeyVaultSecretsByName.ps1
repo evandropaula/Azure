@@ -8,8 +8,9 @@
 
     CAUTION: running this against production environments MAY impact availability depending on the total number of secrets and script execution frequency
 .NOTES
-    File Name  : Search-KeyVaultSecretsByName.ps1
-    Author     : Evandro de Paula
+    File Name   : Search-KeyVaultSecretsByName.ps1
+    Author      : Evandro de Paula
+    Tested on   : Windows 10, Ubuntu 16.04
 .EXAMPLE
     .\Search-KeyVaultSecretsByName.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -KeyVaultName "kv"
     .\Search-KeyVaultSecretsByName.ps1 -SubscriptionId "f4f718ef-c9ed-429c-9bb5-614c999b91d3" -KeyVaultName "kv" -IncludeSecretValue $true
@@ -35,9 +36,6 @@ Param (
     [bool]
     $IncludeSecretValue
 )
- 
-# Modules --------------------------------------------------------------->
-Import-Module AzureRM.Resources
  
  
 # Helper Functions ------------------------------------------------------>
@@ -69,7 +67,7 @@ WriteSuccess
 WriteTitle("KEY VAULT SECRETS")
 WriteText("Reading all secrets from Key Vault '($($KeyVaultName))'...")
 
-# list all secrets
+# List all secrets
 # CAUTION: running this against production environments MAY impact availability depending on the total number of secrets and script execution frequency
 $secrets = Get-AzureKeyVaultSecret -VaultName $KeyVaultName
 
