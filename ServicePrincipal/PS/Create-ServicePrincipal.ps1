@@ -95,7 +95,10 @@ for ($i=0; $i -lt $maxRetry; $i++)
     # Rollback if an error occurs
     if ($err.Count -gt 0)
     {
-        WriteText("Failed! Waiting '$($waitTimeIntervalMs)' ms for changes to be available in AAD and retrying (retry = $($i))...")
+        WriteError("Failed! Find more details below. Retrying after '$($waitTimeIntervalMs)' (retry count = $($i + 1))...")
+
+        $err
+
         Start-Sleep -Milliseconds $waitTimeIntervalMs
         WriteText
     }
