@@ -64,14 +64,16 @@ $servicePrincipal = Get-AzureRmADServicePrincipal -ServicePrincipalName $Service
 
 if ($servicePrincipal -eq $null)
 {
-    WriteError("Service Principal with name '$($ServicePrincipalName)' was not found. Exiting....")
+    WriteError("Service Principal with Application Id '$($ServicePrincipalApplicationId)' was not found...")
     return -1
 }
 
 # Role Assigment to Service Principal ----------------------------------->
 WriteTitle("ROLE ASSIGNMENT")
 WriteText("Assigning role '$($Role)' to Service Principal Object Id '$($servicePrincipal.Id)' at Scope '$($Scope)'...")
-New-AzureRmRoleAssignment -Scope $Scope -ObjectId $servicePrincipal.Id -RoleDefinitionName $Role -ErrorAction SilentlyContinue -ErrorVariable err
+
+New-AzureRmRoleAssignment -Scope $Scope -ObjectId $servicePrincipal.Id -RoleDefinitionName $Role -ErrorAction Stop
+
 WriteText
 
 WriteSuccess
