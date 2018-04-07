@@ -95,7 +95,7 @@ for ($i=0; $i -lt $maxRetry; $i++)
     # Rollback if an error occurs
     if ($err.Count -gt 0)
     {
-        WriteError("Failed! Find more details below. Retrying after '$($waitTimeIntervalMs)' (retry count = $($i + 1))...")
+        WriteError("Failed! Find more details below. Retrying after '$($waitTimeIntervalMs)' ms (retry count = $($i + 1))...")
 
         $err
 
@@ -124,7 +124,7 @@ WriteSuccess
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure to test the Service Principal account just created...")
 
-$creds = New-Object System.Management.Automation.PSCredential ($Application.ApplicationId, $securePassword)
+$creds = New-Object System.Management.Automation.PSCredential ($ServicePrincipal.ApplicationId, $securePassword)
 Add-AzureRmAccount -ServicePrincipal -Credential $creds -TenantId $TenantId -ErrorAction Stop
 WriteSuccess
 
