@@ -55,11 +55,11 @@ variable "function_application_name" {
 }
 
 variable "data_storage_account_name" {
-  description = "Storage account container name"
+  description = "Data storage account container name"
 }
 
 variable "data_storage_account_container_name" {
-  description = "Storage account container name"
+  description = "Data storage account container name"
 }
 
 # ***** Service Principal Authentication *****
