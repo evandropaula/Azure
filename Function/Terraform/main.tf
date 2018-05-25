@@ -31,7 +31,7 @@ variable "resource_group_name" {
 }
 
 variable "tag_environment" {
-  description = "Environment name"
+  description = "Environment name (e.g. development, test, staging, production, etc.)"
 }
 
 variable "function_storage_account_name" {

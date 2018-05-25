@@ -60,7 +60,7 @@ variable "aks_cluster_vm_sku" {
 }
 
 variable "tag_environment" {
-  description = "Environment name"
+  description = "Environment name (e.g. development, test, staging, production, etc.)"
 }
 
 # ATTENTION: 
