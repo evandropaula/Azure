@@ -122,6 +122,7 @@ resource "azurerm_app_service_plan" "hosting_plan" {
   name                = "${var.function_hosting_plan_name}"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
+  kind                = "FunctionApp"
 
   sku {
     tier = "${var.function_hosting_plan_tier}"
