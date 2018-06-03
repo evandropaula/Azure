@@ -49,14 +49,14 @@ Import-Module AzureRM.Resources
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-#Login-AzureRmAccount -ErrorAction Stop
+Login-AzureRmAccount -ErrorAction Stop
 WriteSuccess
 
 
 # Set Context to Subscription Id ---------------------------------------->
 WriteTitle("SUBSCRIPTION CONTEXT")
 WriteText("Setting subscription context...")
-Set-AzureRmContext  -SubscriptionId $SubscriptionId -ErrorAction Stop
+Set-AzureRmContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 WriteSuccess
 
 
