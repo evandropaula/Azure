@@ -73,7 +73,7 @@ else
 {
     # DO NOT uset the "all" permission beacuse it is deprecated
     WriteText("Setting ALL permissions...")
-    Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ResourceGroupName $keyVaultResourceGroupName -ObjectId $ServicePrincipalObjectId -PermissionsToCertificates get,list,delete,create,import,update,managecontacts,getissuers,listissuers,setissuers,deleteissuers,manageissuers -PermissionsToKeys decrypt,encrypt,unwrapKey,wrapKey,verify,sign,get,list,update,create,import,delete,backup,restore,recover,purge -PermissionsToSecrets get,list,set,delete,backup,restore,recover,purge
+    Set-AzureRmKeyVaultAccessPolicy -VaultName $keyVaultName -ResourceGroupName $keyVaultResourceGroupName -ObjectId $ServicePrincipalObjectId -PermissionsToCertificates get,list,delete,create,import,update,recover,backup,restore,managecontacts,getissuers,listissuers,setissuers,deleteissuers,manageissuers -PermissionsToKeys decrypt,encrypt,unwrapKey,wrapKey,verify,sign,get,list,update,create,import,delete,backup,restore,recover,purge -PermissionsToSecrets get,list,set,delete,backup,restore,recover,purge
 }
 
 WriteSuccess
