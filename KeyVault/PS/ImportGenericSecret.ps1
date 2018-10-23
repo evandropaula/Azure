@@ -1,20 +1,16 @@
 ﻿<#
 .SYNOPSIS
-    Read a secret value from Azure Key Vault.
-    Optionally, it can disable past versions of the secret leaving the latest 2 versions enabled to support secret rollover without service disruption.
+    Imports generic secret value into Azure Key Vault
 .DESCRIPTION
-    Read a secret value from Azure Key Vault.
-    Optionally, it can disable past versions of the secret leaving the latest 2 versions enabled to support secret rollover without service disruption.
+    Imports generic secret value into Azure Key Vault
     Remarks:
-    a) Only the most recent 2 versions of the secret will be enabled to support secret rollover without any service disruption;
-    b) Old secret versions will be disabled until the script finds a version that is already disabled;
-    c) By default, disabling the old version flag is turned off. However, this behavior is likely desired for security purposes. Check with your security team/division what are the controls and policies for this; 
+    a) Old secret versions will be disabled until the script finds a version that is already disabled;
+    b) By default, disabling the old version flag is turned off. However, this behavior is likely desired for security purposes. Check with your security team/division what are the controls and policies for this;
 .NOTES
-    File Name  : GetSecretAndDisableOldVersions.ps1
+    File Name  : ImportGenericSecret.ps1
     Author     : Evandro de Paula
 .EXAMPLE
-    .\GetSecretAndDisableOldVersions.ps1 -SubscriptionId "1c979e27-947d-4d9f-b9ef-9aa0df0fcb68" -TenantId "961176d8-efc4-48e3-b48d-e5afda58504b" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "kv" -SecretNames "ReadOnlyConnectionString"
-    .\GetSecretAndDisableOldVersions.ps1 -SubscriptionId "1c979e27-947d-4d9f-b9ef-9aa0df0fcb68" -TenantId "961176d8-efc4-48e3-b48d-e5afda58504b" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "kv" -SecretNames "WriteConnectionString,ReadOnlyConnectionString" -DisableOldVersions $true
+    .\ImportGenericSecret.ps1 -SubscriptionId "1c979e27-947d-4d9f-b9ef-9aa0df0fcb68" -TenantId "961176d8-efc4-48e3-b48d-e5afda58504b" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "kvname" -SecretName "SecretGreetingMessage" -SecretValue "Hello world!"
 #>
 
 
@@ -41,8 +37,12 @@ Param (
     $KeyVaultName,
 
     [Parameter(Mandatory=$true)]
-    [String[]]
-    $SecretNames,
+    [String]
+    $SecretName,
+
+    [Parameter(Mandatory=$true)]
+    [String]
+    $SecretValue,
 
     [Parameter(Mandatory=$false)]
     [bool]
@@ -68,7 +68,6 @@ Catch [System.Management.Automation.CommandNotFoundException]
 # Login to Azure -------------------------------------------------------->
 WriteTitle("AUTHENTICATION")
 WriteText("Logging in to Azure...")
-
 $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
 $creds = New-Object System.Management.Automation.PSCredential ($ServicePrincipalApplicationId, $securePassword)
 Add-AzureRmAccount -ServicePrincipal -Credential $creds -TenantId $TenantId -ErrorAction Stop
@@ -82,29 +81,34 @@ Select-AzureRmSubscription -SubscriptionId $SubscriptionId
 WriteSuccess
 
 
-# Read Secrets ---------------------------------------------------------->
-WriteTitle("READ SECRETS")
+# Secrets --------------------------------------------------------------->
+WriteTitle("SECRETS")
+WriteText("Creating secret '$($SecretName)'...")
+$SecretValueSecureString = ConvertTo-SecureString -String $SecretValue -AsPlainText -Force
+Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -SecretValue $SecretValueSecureString -ErrorAction Stop
+WriteSuccess
 
-for ($j=0; $j -lt $SecretNames.length; $j++)
+
+# Disable Unused Versions (if any and flag is true) --------------------->
+if ($DisableOldVersions -eq $true)
 {
-    $SecretName = $SecretNames[$j]
+    WriteTitle("DISABLE UNUSED SECRETS")
 
-    WriteText("Reading secret '$($SecretName)' latest version...")
-    Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -ErrorAction Stop
-    WriteSuccess
+    $secretVersions = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -IncludeVersions -ErrorAction Stop
 
-    # Disable Old/Unused Versions (if any)
-    if ($DisableOldVersions -eq $true)
+    if ($secretVersions.length -lt 3)
     {
-        WriteTitle("DISABLE UNUSED SECRETS")
+        # Not enough old versions found to be disabled since the latest 2 have to be enabled to support
+        # secret rollover without any disruption
+        WriteText("No old secret versions found to be disabled, exiting...")
+    }
+    else 
+    {
         WriteText("Disabling secret '$($SecretName)' old versions, only latest 2 versions will be left enabled...")
-        WriteText
-
-        $secretVersions = Get-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $SecretName -IncludeVersions -ErrorAction Stop
 
         for ($i=0; $i -lt $secretVersions.length; $i++)
         {
-            if ($i -gt 1) # Skip the latest 2 versions to ensure they are enabled
+            if ($i -gt 1)
             {
                 if ($secretVersions[$i].Enabled -eq $true)
                 {
@@ -115,8 +119,10 @@ for ($j=0; $j -lt $SecretNames.length; $j++)
                 }
                 else
                 {
-                    WriteText("Secret '$($secretVersions[$i].Name)' version '$($secretVersions[$i].Version)' is already disabled, moving on to the next secret (if any)...")
+                    WriteText("Secret '$($secretVersions[$i].Name)' version '$($secretVersions[$i].Version)' is already disabled, exiting...")
                     WriteSuccess
+
+                    # Break execution when the first already disabled secret version is found
                     break
                 }
             }
