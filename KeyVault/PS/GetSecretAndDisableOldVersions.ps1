@@ -13,7 +13,8 @@
     File Name  : GetSecretAndDisableOldVersions.ps1
     Author     : Evandro de Paula
 .EXAMPLE
-    .\GetSecretAndDisableOldVersions.ps1 -SubscriptionId "fc513365-0821-451c-a5b3-acf82568d8ce" -TenantId "ee69be27-d938-4eb5-8711-c5e69ca43718" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "s00197npkvt00001" -SecretNames "s00197tbl0crdfuldev0-ReadOnlyConnectionString"
+    .\GetSecretAndDisableOldVersions.ps1 -SubscriptionId "1c979e27-947d-4d9f-b9ef-9aa0df0fcb68" -TenantId "961176d8-efc4-48e3-b48d-e5afda58504b" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "kv" -SecretNames "ReadOnlyConnectionString"
+    .\GetSecretAndDisableOldVersions.ps1 -SubscriptionId "1c979e27-947d-4d9f-b9ef-9aa0df0fcb68" -TenantId "961176d8-efc4-48e3-b48d-e5afda58504b" -ServicePrincipalApplicationId "<Service Principal ApplicationId (Guid)>" -Password "<Service Principal Password or Key (String)>" -keyVaultName "kv" -SecretNames "WriteConnectionString,ReadOnlyConnectionString" -DisableOldVersions $true
 #>
 
 
